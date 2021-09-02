@@ -4,11 +4,11 @@ import TicketControl from "./TicketControl";
 
 function App() {
   return (
-  <React.Fragment>
-    <Header />
-    <TicketControl />
-    {/* This is a JSX comment. */}
-  </React.Fragment>
+    <React.Fragment>
+      <Header />
+      <TicketControl />
+      {/* This is a JSX comment. */}
+    </React.Fragment>
   );
 }
 //under the hood React is actually using a method called React.createElement() to create these elements

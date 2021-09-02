@@ -2,6 +2,7 @@ import React from "react";
 import { v4 } from 'uuid';
 import PropTypes from "prop-types";
 import ReusableForm from "./ReusableForm";
+import Moment from 'moment';
 
 function NewTicketForm(props){
   return (
@@ -14,7 +15,8 @@ function NewTicketForm(props){
 
   function handleNewTicketFormSubmission(event) {
     event.preventDefault();
-    props.onNewTicketCreation({names: event.target.names.value, location: event.target.location.value, issue: event.target.issue.value, id: v4()})
+    props.onNewTicketCreation({names: event.target.names.value, location: event.target.location.value, issue: event.target.issue.value, id: v4(), timeOpen: new Moment(), formattedWaitTime: new Moment().fromNow(true)
+    });
   }
 
   //because a function component doesn't have 'this' as a reference like a class component, we need to directly refer to the 'props' passed into the function component. That's why we do props.onNewTicketCreation() instead of this.onNewTicketCreation()

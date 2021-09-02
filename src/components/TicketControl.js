@@ -19,6 +19,36 @@ class TicketControl extends React.Component {
     };
   }
 
+componentDidMount() {
+  this.waitTimeUpdateTimer = setInterval(() => 
+    this.updateTicketElapsedWaitTime(),
+    60000
+    );
+}
+
+componentDidUpdate(){
+  console.log("component updated");
+}
+//this method is not used in this project, just shown to see how it works
+
+componentWillUnmount(){
+  console.log("component unmounted");
+  clearInterval(this.waitTimeUpdateTimer);
+}
+
+updateTicketElapsedWaitTime = () => {
+  const { dispatch } = this.props;
+  Object.values(this.props.masterTicketList).forEach(ticket => {
+    const newFormattedWaitTime = ticket.timeOpen.fromNow(true);
+    const action = a.updateTime(ticket.id, newFormattedWaitTime);
+    dispatch(action);
+  })
+}
+
+
+
+
+
 handleEditingTicketInList = (ticketToEdit) => {
   const { dispatch } = this.props;
   // const { id, names, location, issue } = ticketToEdit;
