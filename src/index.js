@@ -9,8 +9,21 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 // import reducer from './reducers/ticket-list-reducer';
 import rootReducer from './reducers/index';
+import { ReactReduxFirebaseProvider } from 'react-redux-firebase';
+import { createFirestoreInstance } from 'redux-firestore';
+import firebase from ".firebase";
 
 const store = createStore(rootReducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+
+const rrfProps = {
+  firebase,
+  config: {
+    userProfile: "users"
+  },
+  dispatch: store.dispatch,
+  createFirestoreInstance
+}
+
 
 store.subscribe(() =>
   console.log(store.getState())
@@ -18,7 +31,9 @@ store.subscribe(() =>
 
 ReactDOM.render(
   <Provider store = {store}>
-    <App />
+    <ReactReduxFirebaseProvider {...rrfProps}>
+      <App />
+    </ReactReduxFirebaseProvider>
   </Provider>,
   document.getElementById('root')
 );
