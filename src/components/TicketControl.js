@@ -49,24 +49,24 @@ updateTicketElapsedWaitTime = () => {
 
 
 
-handleEditingTicketInList = (ticketToEdit) => {
-  const { dispatch } = this.props;
-  // const { id, names, location, issue } = ticketToEdit;
-  const action = a.addTicket(ticketToEdit);
-  dispatch(action);
-  this.setState({
-    editing: false,
-    selectedTicket: null
-  });
-  // const editedMasterTicketList = this.state.masterTicketList
-  //       .filter(ticket => ticket.id !== this.state.selectedTicket.id)
-  //       .concat(ticketToEdit);
-  // this.setState({
-  //   masterTicketList: editedMasterTicketList,
-  //   editing: false,
-  //   selectedTicket: null
-  // });
-}
+// handleEditingTicketInList = (ticketToEdit) => {
+//   const { dispatch } = this.props;
+//   // const { id, names, location, issue } = ticketToEdit;
+//   const action = a.addTicket(ticketToEdit);
+//   dispatch(action);
+//   this.setState({
+//     editing: false,
+//     selectedTicket: null
+//   });
+//   // const editedMasterTicketList = this.state.masterTicketList
+//   //       .filter(ticket => ticket.id !== this.state.selectedTicket.id)
+//   //       .concat(ticketToEdit);
+//   // this.setState({
+//   //   masterTicketList: editedMasterTicketList,
+//   //   editing: false,
+//   //   selectedTicket: null
+//   // });
+// }
 
 handleEditClick = () => {
   console.log("handleEditClick reached");
@@ -92,16 +92,8 @@ handleChangingSelectedTicket = (id) => {
 
   handleAddingNewTicketToList = (newTicket) => {
     const { dispatch } = this.props;
-    // const { id, names, location, issue } = newTicket;
-    const action = a.addTicket(newTicket);
+    const action = a.toggleForm();
     dispatch(action);
-    const action2 = a.toggleForm();
-    dispatch(action2)
-    // this.setState({formVisibleOnPage: false})
-
-    // const newMasterTicketList = this.state.masterTicketList.concat(newTicket);
-    // this.setState({masterTicketList: newMasterTicketList,
-    //               formVisibleOnPage: false });
   }
 
 
