@@ -166,3 +166,4 @@ const mapStateToProps = state => {
 TicketControl = connect(mapStateToProps)(TicketControl); //now our new TicketControl has state props and access to dispatch by way of connect()
 
 export default withFirestore(TicketControl);
+//withFirestore() is a wrapper method and a HOC - here we're using a HOC to give TicketControl the functionality it needs to use Firestore

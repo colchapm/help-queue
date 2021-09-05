@@ -13,7 +13,7 @@ function TicketList(props){
   //this hook comes from react-redux-firebase and allows us to listen for changes to Firestore
 
   const tickets = useSelector(state => state.firestore.ordered.tickets);
-  //the useSelection hook allows us to extract data from our Redux store
+  //the useSelector hook allows us to extract data from our Redux store
 
   if (isLoaded(tickets)) {
     return (
