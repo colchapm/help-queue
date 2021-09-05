@@ -6,6 +6,7 @@ import EditTicketForm from './EditTicketForm';
 import { connect } from 'react-redux';
 import PropTypes from "prop-types";
 import * as a from './../actions';
+import { withFirestore } from 'react-redux-firebase' 
 
 class TicketControl extends React.Component {
 
@@ -46,27 +47,24 @@ updateTicketElapsedWaitTime = () => {
 }
 
 
-
-
-
-// handleEditingTicketInList = (ticketToEdit) => {
-//   const { dispatch } = this.props;
-//   // const { id, names, location, issue } = ticketToEdit;
-//   const action = a.addTicket(ticketToEdit);
-//   dispatch(action);
-//   this.setState({
-//     editing: false,
-//     selectedTicket: null
-//   });
-//   // const editedMasterTicketList = this.state.masterTicketList
-//   //       .filter(ticket => ticket.id !== this.state.selectedTicket.id)
-//   //       .concat(ticketToEdit);
-//   // this.setState({
-//   //   masterTicketList: editedMasterTicketList,
-//   //   editing: false,
-//   //   selectedTicket: null
-//   // });
-// }
+handleEditingTicketInList = () => {
+  // const { dispatch } = this.props;
+  // const { id, names, location, issue } = ticketToEdit;
+  // const action = a.addTicket(ticketToEdit);
+  // dispatch(action);
+  this.setState({
+    editing: false,
+    selectedTicket: null
+  });
+  // const editedMasterTicketList = this.state.masterTicketList
+  //       .filter(ticket => ticket.id !== this.state.selectedTicket.id)
+  //       .concat(ticketToEdit);
+  // this.setState({
+  //   masterTicketList: editedMasterTicketList,
+  //   editing: false,
+  //   selectedTicket: null
+  // });
+}
 
 handleEditClick = () => {
   console.log("handleEditClick reached");
@@ -74,10 +72,12 @@ handleEditClick = () => {
 }
 
 handleDeletingTicket = (id) => {
-  const { dispatch } = this.props;
-  const action = a.deleteTicket(id);
-  dispatch(action);
+  this.props.firestore.delete({collection: 'tickets', doc: id});
   this.setState({selectedTicket: null});
+  // const { dispatch } = this.props;
+  // const action = a.deleteTicket(id);
+  // dispatch(action);
+  // this.setState({selectedTicket: null});
   // const newMasterTicketList = this.state.masterTicketList.filter(ticket => ticket.id !== id); //we want to filter everything that doesn't have the ticket ID that will be passed into the method
   // this.setState({
   //   masterTicketList: newMasterTicketList,
@@ -86,8 +86,16 @@ handleDeletingTicket = (id) => {
 }
 
 handleChangingSelectedTicket = (id) => {
-  const selectedTicket = this.props.masterTicketList[id];
-  this.setState({selectedTicket: selectedTicket}); 
+  this.props.firestore.get({collection: 'tickets', doc: id }).then((ticket) => {
+    const firestoreTicket = {
+      names: ticket.get("names"),
+      location: ticket.get("location"),
+      issue: ticket.get("issue"),
+      id: ticket.id
+    }
+    //our promise doesn't return a ticket, it returns a DocumentSnapshot - a firebase object that containes read-only data of a specified document. The id is readily available but we have to use get() method to grab each specific property. This is a different get() method than the one we use to retrieve the document from firestore 
+    this.setState({selectedTicket: firestoreTicket});
+  });
 }
 
   handleAddingNewTicketToList = (newTicket) => {
@@ -144,17 +152,17 @@ handleChangingSelectedTicket = (id) => {
 }
 
 TicketControl.propTypes = {
-  masterTicketList: PropTypes.object,
+  // masterTicketList: PropTypes.object,
   formVisibleOnPage: PropTypes.bool
 };
 
 const mapStateToProps = state => {
   return {
-    masterTicketList: state.masterTicketList,
+    // masterTicketList: state.masterTicketList,
     formVisibleOnPage: state.formVisibleOnPage
   }
 }
 
 TicketControl = connect(mapStateToProps)(TicketControl); //now our new TicketControl has state props and access to dispatch by way of connect()
 
-export default TicketControl;
+export default withFirestore(TicketControl);
