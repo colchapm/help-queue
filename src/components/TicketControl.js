@@ -6,7 +6,8 @@ import EditTicketForm from './EditTicketForm';
 import { connect } from 'react-redux';
 import PropTypes from "prop-types";
 import * as a from './../actions';
-import { withFirestore } from 'react-redux-firebase' 
+import { withFirestore, isLoaded } from 'react-redux-firebase';
+
 
 class TicketControl extends React.Component {
 
@@ -20,31 +21,31 @@ class TicketControl extends React.Component {
     };
   }
 
-componentDidMount() {
-  this.waitTimeUpdateTimer = setInterval(() => 
-    this.updateTicketElapsedWaitTime(),
-    60000
-    );
-}
+// componentDidMount() {
+//   this.waitTimeUpdateTimer = setInterval(() => 
+//     this.updateTicketElapsedWaitTime(),
+//     60000
+//     );
+// }
 
-componentDidUpdate(){
-  console.log("component updated");
-}
-//this method is not used in this project, just shown to see how it works
+// componentDidUpdate(){
+//   console.log("component updated");
+// }
+// //this method is not used in this project, just shown to see how it works
 
-componentWillUnmount(){
-  console.log("component unmounted");
-  clearInterval(this.waitTimeUpdateTimer);
-}
+// componentWillUnmount(){
+//   console.log("component unmounted");
+//   clearInterval(this.waitTimeUpdateTimer);
+// }
 
-updateTicketElapsedWaitTime = () => {
-  const { dispatch } = this.props;
-  Object.values(this.props.masterTicketList).forEach(ticket => {
-    const newFormattedWaitTime = ticket.timeOpen.fromNow(true);
-    const action = a.updateTime(ticket.id, newFormattedWaitTime);
-    dispatch(action);
-  })
-}
+// updateTicketElapsedWaitTime = () => {
+//   const { dispatch } = this.props;
+//   Object.values(this.props.masterTicketList).forEach(ticket => {
+//     const newFormattedWaitTime = ticket.timeOpen.fromNow(true);
+//     const action = a.updateTime(ticket.id, newFormattedWaitTime);
+//     dispatch(action);
+//   })
+// }
 
 
 handleEditingTicketInList = () => {
@@ -123,30 +124,53 @@ handleChangingSelectedTicket = (id) => {
   }
 
   render(){
-    let currentlyVisibleState = null;
-    let buttonText = null;
+    const auth = this.props.firebase.auth();
+    //call this method to determine the authentication status of our client
 
-    if (this.state.editing) {
-      currentlyVisibleState = <EditTicketForm ticket = {this.state.selectedTicket}
-      onEditTicket = {this.handleEditingTicketInList} />
-      buttonText = "Return to Ticket List";
-    } else if (this.state.selectedTicket != null) {
-      currentlyVisibleState = <TicketDetail ticket = {this.state.selectedTicket} onClickingDelete = {this.handleDeletingTicket} 
-      onClickingEdit = {this.handleEditClick} />
-      buttonText = "Return to Ticket List";
-    } else if (this.props.formVisibleOnPage) {
-      currentlyVisibleState = <NewTicketForm onNewTicketCreation = {this.handleAddingNewTicketToList} />;
-      buttonText = "Return to Ticket List";
-    } else {
-      currentlyVisibleState = <TicketList onTicketSelection={this.handleChangingSelectedTicket} />; //because a user will actually be clicking on the ticket in the Ticket component, we will pass the handleChangingSelectedTicket method as a prop 
-      buttonText = "Add Ticket";
+    if (!isLoaded(auth)) {
+      return (
+        <React.Fragment>
+          <h1>Loading...</h1>
+        </React.Fragment>
+      )
     }
-    return (
-      <React.Fragment>
-        {currentlyVisibleState}
-        <button onClick={this.handleClick}>{buttonText}</button>
-      </React.Fragment>
-    );
+    
+
+    if ((isLoaded(auth)) && (auth.currentUser == null)) {
+      return (
+        <React.Fragment>
+          <h1>You must be signed in to access the queue.</h1>
+        </React.Fragment>
+      )
+    } 
+
+    if ((isLoaded(auth)) && (auth.currentUser!= null)) {
+      let currentlyVisibleState = null;
+      let buttonText = null;
+      if (this.state.editing) {
+        currentlyVisibleState = <EditTicketForm ticket = {this.state.selectedTicket}
+        onEditTicket = {this.handleEditingTicketInList} />
+        buttonText = "Return to Ticket List";
+      } else if (this.state.selectedTicket != null) {
+        currentlyVisibleState = <TicketDetail ticket = {this.state.selectedTicket} onClickingDelete = {this.handleDeletingTicket} 
+        onClickingEdit = {this.handleEditClick} />
+        buttonText = "Return to Ticket List";
+      } else if (this.props.formVisibleOnPage) {
+        currentlyVisibleState = <NewTicketForm onNewTicketCreation = {this.handleAddingNewTicketToList} />;
+        buttonText = "Return to Ticket List";
+      } else {
+        currentlyVisibleState = <TicketList onTicketSelection={this.handleChangingSelectedTicket} />; //because a user will actually be clicking on the ticket in the Ticket component, we will pass the handleChangingSelectedTicket method as a prop 
+        buttonText = "Add Ticket";
+      }
+      return (
+        <React.Fragment>
+          {currentlyVisibleState}
+          <button onClick={this.handleClick}>{buttonText}</button>
+        </React.Fragment>
+      );
+    }
+
+    
   }
 
 }

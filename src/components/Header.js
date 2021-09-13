@@ -11,7 +11,7 @@ function Header(){
           <Link to="/">Home</Link>
         </li>
         <li>
-          <Link to="/signin">Sign In</Link>
+          <Link to="/signin">Sign In / Sign Up / Sign Out</Link>
         </li>
       </ul>
       <img src={ticketsImage} alt="an image of tickets" />

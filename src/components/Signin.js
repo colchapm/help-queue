@@ -1,10 +1,13 @@
 import React from "react";
 import firebase from "firebase/app"; 
 //this will give us access to firebase.auth() methods
+import { withFirestore, isLoaded } from 'react-redux-firebase';
+import { useHistory } from 'react-router';
 
 
 function Signin(){
 
+  const history = useHistory();
 
   function doSignUp(event) {
     event.preventDefault();
@@ -23,6 +26,7 @@ function Signin(){
     const email = event.target.signinEmail.value;
     const password = event.target.signinPassword.value;
     firebase.auth().signInWithEmailAndPassword(email, password).then(function() {
+      history.push("/");
       console.log("successfully signed in");
     }).catch(function(error) {
       console.log(error.message);
@@ -31,14 +35,24 @@ function Signin(){
 
   function doSignOut() {
     firebase.auth().signOut().then(function() {
+      history.push("/signin");
       console.log("successfully signed out");
     }).catch(function(error) {
       console.log(error.message);
     })
   }
 
-  return (
-    <React.Fragment>
+  const auth=firebase.auth();
+  if (!isLoaded(auth)) {
+    return (
+      <React.Fragment>
+        <h1>Loading...</h1>
+      </React.Fragment>
+    );
+  }
+  if ((isLoaded(auth)) && (auth.currentUser == null)) {
+    return (
+      <React.Fragment>
       <h1>Sign Up</h1>
       <form onSubmit={doSignUp}>
         <input
@@ -64,11 +78,18 @@ function Signin(){
           placeholder='Password' />
         <button type='submit'>Sign In</button>
       </form>
-
-      <h1>Sign Out</h1>
-      <button onClick={doSignOut}>Sign Out</button>
     </React.Fragment>
-  );
+    )
+  }
+
+  if ((isLoaded(auth)) && (auth.currentUser != null)) {
+    return (
+      <React.Fragment>
+        <h1>Sign Out</h1>
+        <button onClick={doSignOut}>Sign Out</button>
+    </React.Fragment>
+    )
+  }
 }
 
-export default Signin
+export default withFirestore(Signin);
